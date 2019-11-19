@@ -3,7 +3,7 @@
 # MiniProject2_Statistics
 Mini Project 2 - Statistics Calculations (Kelley, Nicole, Shannon)
 
-#Task List
+
 ## Statistics Calculator Task List
 
 - [x] Exception, Unit Test, Constructor, Factory, Decorator, Extend Class, CSV Files, Reading Files (Shannon)
@@ -11,7 +11,7 @@ Mini Project 2 - Statistics Calculations (Kelley, Nicole, Shannon)
 - [X] Calculator Blueprint (Kelley)
 
 ## Overview
-This repository is an example of how to calculate general statistics variables using classes, decorators, and unittesting. The data used is female height data in the United States which was retrieved from: https://www.kaggle.com/mustafaali96/weight-height 
+This repository is an example of how to calculate general statistics variables using classes, decorators, and unit testing. The data used is female and male height data in the United States which was retrieved from [Kaggle](https://www.kaggle.com/mustafaali96/weight-height).
 
 ## Statistical Formulas Covered
 
@@ -24,7 +24,7 @@ This repository is an example of how to calculate general statistics variables u
 - [X] Population Correlation Coefficient - Nicole
 - [X] Confidence Interval - Nicole
 - [X] Population Variance - Nicole
-- [X] P Value - Shannon
+- [X] P-Value - Shannon
 - [X] Proportion - Shannon
 - [X] Sample Mean - Shannon
 - [X] Sample Standard Deviation - Shannon
