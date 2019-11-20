@@ -1,9 +1,10 @@
 from Statistics.Z_Score import z_score
 
-
 def p_value(data):
-    score = z_score(data)
-    value = [float(x) for x in data]
-    if score == value[1]:
-        return value
-    print(value)
+    test = []
+    z_score_test_result = []
+
+    for test_value in test:
+        expected = test_value.split(",")
+        if z_score_test_result == expected[0]:
+            return expected[1]
