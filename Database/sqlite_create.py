@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine, Column, DateTime, ForeignKey, \
-    Numeric, String, SmallInteger, Integer
+    Numeric, String, SmallInteger, func, Integer
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, Session, sessionmaker
 from datetime import datetime
 
 # creating engine to connect to sqlite database
@@ -19,6 +19,9 @@ class Customer(Base):
     email = Column(String(200), nullable=False)
     address = Column(String(200), nullable=False)
     town = Column(String(200), nullable=False)
+    created_on = Column(DateTime(), default=datetime.now)
+    updated_on = Column(DateTime(), default=datetime.now, onupdate=datetime.now)
+    # orders = relationship("Order", backref='customer')
 
 
 class Item(Base):
@@ -29,12 +32,15 @@ class Item(Base):
     selling_price = Column(Numeric(10, 2), nullable=False)
 
 
+#     orders = relationship("Order", backref='customer')
+
+
 class Order(Base):
     __tablename__ = 'orders'
     id = Column(Integer(), primary_key=True)
     customer_id = Column(Integer(), ForeignKey('customers.id'))
     date_placed = Column(DateTime(), default=datetime.now)
-    line_items = relationship("OrderLine", secondary="order_lines", backref='order')
+    # line_items = relationship(primaryjoin="OrderLine", secondaryjoin="order_lines", backref='orders')
 
 
 class OrderLine(Base):
@@ -47,3 +53,26 @@ class OrderLine(Base):
 
 
 Base.metadata.create_all(engine)
+
+# Inserting data into table
+Session = sessionmaker(bind=engine)
+session = Session()
+
+c1 = Customer(first_name='Toby',
+              last_name='Miller',
+              username='tmiller',
+              email='tmiller@example.com',
+              address='1662 Kinney Street',
+              town='Wolfden'
+              )
+
+c2 = Customer(first_name='Scott',
+              last_name='Harvey',
+              username='scottharvey',
+              email='scottharvey@example.com',
+              address='424 Patterson Street',
+              town='Beckinsdale'
+              )
+
+session.add_all([c1, c2])
+session.commit()
