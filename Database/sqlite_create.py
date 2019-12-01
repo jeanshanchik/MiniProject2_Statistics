@@ -21,7 +21,7 @@ class Customer(Base):
     town = Column(String(200), nullable=False)
     created_on = Column(DateTime(), default=datetime.now)
     updated_on = Column(DateTime(), default=datetime.now, onupdate=datetime.now)
-    orders = relationship("Order", backref='customer')
+    order = relationship("Order", backref='customers')
 
 
 class Order(Base):
@@ -29,8 +29,8 @@ class Order(Base):
     id = Column(Integer(), primary_key=True)
     customer_id = Column(Integer(), ForeignKey('customers.id'))
     date_placed = Column(DateTime(), default=datetime.now)
-    customer = relationship("Customer", back_populates="orders")
-    line_items = relationship("OrderLine", secondary="order_lines", backref='order')
+    customer = relationship("Customer")
+    order_line = relationship("OrderLine", backref='orders')
 
 
 class OrderLine(Base):
@@ -39,8 +39,8 @@ class OrderLine(Base):
     order_id = Column(Integer(), ForeignKey('orders.id'))
     item_id = Column(Integer(), ForeignKey('items.id'))
     quantity = Column(SmallInteger())
-    order = relationship("Order", back_populates="customers")
-    item = relationship("Item")
+    item = relationship("Item", backref='order_lines')
+    order = relationship("Order")
 
 
 class Item(Base):
@@ -104,10 +104,7 @@ c6 = Customer(first_name='Scott',
               address='424 Patterson Street',
               town='Beckinsdale')
 
-session.add_all([c1, c2, c3, c4, c5, c6])
-session.commit()
-
-# Adding items
+# Adding items to item table
 i1 = Item(name='Chair', cost_price=9.21, selling_price=10.81, quantity=5)
 i2 = Item(name='Pen', cost_price=3.45, selling_price=4.51, quantity=3)
 i3 = Item(name='Headphone', cost_price=15.52, selling_price=16.81, quantity=50)
@@ -117,11 +114,7 @@ i6 = Item(name='Monitor', cost_price=200.14, selling_price=212.89, quantity=50)
 i7 = Item(name='Watch', cost_price=100.58, selling_price=104.41, quantity=50)
 i8 = Item(name='Water Bottle', cost_price=20.89, selling_price=25, quantity=50)
 
-session.add_all([i1, i2, i3, i4, i5, i6, i7, i8])
-session.commit()
-
-# Adding orders
-
+# Adding orders to order table
 o1 = Order(customer=c1)
 o2 = Order(customer=c1)
 
@@ -130,5 +123,7 @@ line_item2 = OrderLine(order=o1, item=i2, quantity=2)
 line_item3 = OrderLine(order=o2, item=i1, quantity=1)
 line_item3 = OrderLine(order=o2, item=i2, quantity=4)
 
+session.add_all([c1, c2, c3, c4, c5, c6])
+session.add_all([i1, i2, i3, i4, i5, i6, i7, i8])
 session.add_all([o1, o2])
 session.commit()
