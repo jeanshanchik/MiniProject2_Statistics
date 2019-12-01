@@ -5,7 +5,7 @@ from sqlalchemy.orm import relationship, Session, sessionmaker
 from datetime import datetime
 
 # creating engine to connect to sqlite database
-engine = create_engine('sqlite:///Sqlite-Data/example.db')
+engine = create_engine('sqlite:///Sqlite-Data/sqlalchemy_example.db')
 
 Base = declarative_base()
 
@@ -21,7 +21,26 @@ class Customer(Base):
     town = Column(String(200), nullable=False)
     created_on = Column(DateTime(), default=datetime.now)
     updated_on = Column(DateTime(), default=datetime.now, onupdate=datetime.now)
-    # orders = relationship("Order", backref='customer')
+    orders = relationship("Order", backref='customer')
+
+
+class Order(Base):
+    __tablename__ = 'orders'
+    id = Column(Integer(), primary_key=True)
+    customer_id = Column(Integer(), ForeignKey('customers.id'))
+    date_placed = Column(DateTime(), default=datetime.now)
+    customer = relationship("Customer", back_populates="orders")
+    line_items = relationship("OrderLine", secondary="order_lines", backref='order')
+
+
+class OrderLine(Base):
+    __tablename__ = 'order_lines'
+    id = Column(Integer(), primary_key=True)
+    order_id = Column(Integer(), ForeignKey('orders.id'))
+    item_id = Column(Integer(), ForeignKey('items.id'))
+    quantity = Column(SmallInteger())
+    order = relationship("Order", back_populates="customers")
+    item = relationship("Item")
 
 
 class Item(Base):
@@ -32,22 +51,6 @@ class Item(Base):
     selling_price = Column(Numeric(10, 2), nullable=False)
     quantity = Column(SmallInteger(), nullable=False)
     # orders = relationship("Order", backref='customer')
-
-class Order(Base):
-    __tablename__ = 'orders'
-    id = Column(Integer(), primary_key=True)
-    customer_id = Column(Integer(), ForeignKey('customers.id'))
-    date_placed = Column(DateTime(), default=datetime.now)
-    # line_items = relationship(primaryjoin="OrderLine", secondaryjoin="order_lines", backref='orders')
-
-
-class OrderLine(Base):
-    __tablename__ = 'order_lines'
-    id = Column(Integer(), primary_key=True)
-    order_id = Column(Integer(), ForeignKey('orders.id'))
-    item_id = Column(Integer(), ForeignKey('items.id'))
-    quantity = Column(SmallInteger())
-    item = relationship("Item")
 
 
 Base.metadata.create_all(engine)
@@ -115,4 +118,17 @@ i7 = Item(name='Watch', cost_price=100.58, selling_price=104.41, quantity=50)
 i8 = Item(name='Water Bottle', cost_price=20.89, selling_price=25, quantity=50)
 
 session.add_all([i1, i2, i3, i4, i5, i6, i7, i8])
+session.commit()
+
+# Adding orders
+
+o1 = Order(customer=c1)
+o2 = Order(customer=c1)
+
+line_item1 = OrderLine(order=o1, item=i1, quantity=3)
+line_item2 = OrderLine(order=o1, item=i2, quantity=2)
+line_item3 = OrderLine(order=o2, item=i1, quantity=1)
+line_item3 = OrderLine(order=o2, item=i2, quantity=4)
+
+session.add_all([o1, o2])
 session.commit()
